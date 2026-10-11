@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dynamic Editable Website</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --accent-color: #3498db;
+            --bg-color: #f4f6f7;
+            --card-bg: #ffffff;
+            --text-color: #333333;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            display: flex;
+        }
+
+        /* Control Panel Sidebar */
+        #control-panel {
+            width: 320px;
+            background-color: var(--primary-color);
+            color: white;
+            padding: 20px;
+            box-sizing: border-box;
+            height: 100vh;
+            position: fixed;
+            overflow-y: auto;
+            box-shadow: 4px 0 10px rgba(0,0,0,0.1);
+        }
+
+        #control-panel h2 {
+            margin-top: 0;
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%;
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            box-sizing: border-box;
+        }
+
+        .form-group textarea {
+            height: 80px;
+            resize: vertical;
+        }
+
+        button {
+            width: 100%;
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1rem;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        /* Main Content Area */
+        #main-content {
+            margin-left: 320px;
+            flex-grow: 1;
+            padding: 40px;
+            max-width: 1000px;
+        }
+
+        header {
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        /* Figure Sections grid */
+        .figures-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+        }
+
+        .figure-card {
+            background-color: var(--card-bg);
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            transition: transform 0.2s;
+            border: 2px dashed transparent;
+        }
+
+        /* Visual cue that elements are directly editable */
+        [contenteditable="true"]:hover {
+            background-color: rgba(52, 152, 219, 0.1);
+            outline: 1px dashed var(--accent-color);
+        }
+
+        .figure-image-wrapper {
+            width: 100%;
+            height: 250px;
+            background-color: #e0e0e0;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .figure-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .figure-info {
+            padding: 20px;
+        }
+
+        .figure-title {
+            margin-top: 0;
+            font-size: 1.5rem;
+            color: var(--primary-color);
+        }
+
+        .figure-text {
+            line-height: 1.6;
+            color: #555;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 🛠️ Control Panel (Keyword-based editing) -->
+    <div id="control-panel">
+        <h2>Editor Panel</h2>
+        
+        <div class="form-group">
+            <label for="section-selector">Select Figure Layout:</label>
+            <select id="section-selector" onchange="loadSelectedSection()">
+                <option value="fig1">Figure 1 (Ada Lovelace)</option>
+                <option value="fig2">Figure 2 (Alan Turing)</option>
+                <option value="fig3">Figure 3 (Grace Hopper)</option>
+            </select>
+        </div>
+
+        <hr style="border-color: var(--accent-color); margin: 20px 0;">
+
+        <div class="form-group">
+            <label for="input-title">Section Title:</label>
+            <input type="text" id="input-title" placeholder="Enter new title">
+        </div>
+
+        <div class="form-group">
+            <label for="input-image">Image URL:</label>
+            <input type="text" id="input-image" placeholder="https://example.com">
+        </div>
+
+        <div class="form-group">
+            <label for="input-text">Description Text:</label>
+            <textarea id="input-text" placeholder="Enter description details..."></textarea>
+        </div>
+
+        <button onclick="updateSection()">Apply Changes</button>
+    </div>
+
+    <!-- 🌐 Main Website Grid -->
+    <div id="main-content">
+        <header>
+            <h1 contenteditable="true">Influential Figures in Computing</h1>
+            <p contenteditable="true">Click directly on any text below to edit it inline, or use the keyword panel on the left.</p>
+        </header>
+
+        <main class="figures-container">
+            
+            <!-- Figure 1 -->
+            <section class="figure-card" id="fig1">
+                <div class="figure-image-wrapper">
+                    <img id="img-fig1" src="https://unsplash.com" alt="Figure 1">
+                </div>
+                <div class="figure-info">
+                    <h3 class="figure-title" id="title-fig1" contenteditable="true">Ada Lovelace</h3>
+                    <p class="figure-text" id="text-fig1" contenteditable="true">
+                        Known as the world's first computer programmer. She wrote an algorithm intended to be executed by Charles Babbage's Analytical Engine.
+                    </p>
+                </div>
+            </section>
+
+            <!-- Figure 2 -->
+            <section class="figure-card" id="fig2">
+                <div class="figure-image-wrapper">
+                    <img id="img-fig2" src="https://unsplash.com" alt="Figure 2">
+                </div>
+                <div class="figure-info">
+                    <h3 class="figure-title" id="title-fig2" contenteditable="true">Alan Turing</h3>
+                    <p class="figure-text" id="text-fig2" contenteditable="true">
+                        A foundational mathematician and logician. He detailed the concept of the "Universal Machine" (Turing Machine) capable of computing any computable function.
+                    </p>
+                </div>
+            </section>
+
+            <!-- Figure 3 -->
+            <section class="figure-card" id="fig3">
+                <div class="figure-image-wrapper">
+                    <img id="img-fig3" src="https://unsplash.com" alt="Figure 3">
+                </div>
+                <div class="figure-info">
+                    <h3 class="figure-title" id="title-fig3" contenteditable="true">Grace Hopper</h3>
+                    <p class="figure-text" id="text-fig3" contenteditable="true">
+                        A pioneer of computer programming who invented one of the first linkers. She popularized the idea of machine-independent programming languages leading to COBOL.
+                    </p>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- ⚙️ JavaScript for handling updates -->
+    <script>
+        // Load the currently selected section's data into the input boxes
+        function loadSelectedSection() {
+            const selectedKeyword = document.getElementById('section-selector').value;
+            
+            // Get current values from the DOM
+            const currentTitle = document.getElementById(`title-${selectedKeyword}`).innerText;
+            const currentImage = document.getElementById(`img-${selectedKeyword}`).src;
+            const currentText = document.getElementById(`text-${selectedKeyword}`).innerText;
+
+            // Populate form inputs
+            document.getElementById('input-title').value = currentTitle;
+            document.getElementById('input-image').value = currentImage;
+            document.getElementById('input-text').value = currentText;
+        }
+
+        // Apply input values back into the respective section element 
+        function updateSection() {
+            const selectedKeyword = document.getElementById('section-selector').value;
+
+            // Extract values from the editor panel inputs
+            const newTitle = document.getElementById('input-title').value;
+            const newImage = document.getElementById('input-image').value;
+            const newText = document.getElementById('input-text').value;
+
+            // Update web elements dynamically
+            if(newTitle) document.getElementById(`title-${selectedKeyword}`).innerText = newTitle;
+            if(newImage) document.getElementById(`img-${selectedKeyword}`).src = newImage;
+            if(newText) document.getElementById(`text-${selectedKeyword}`).innerText = newText;
+            
+            alert(`Section associated with keyword "${selectedKeyword}" successfully updated!`);
+        }
+
+        // Initialize the input data on page load
+        window.onload = loadSelectedSection;
+    </script>
+</body>
+</html>
